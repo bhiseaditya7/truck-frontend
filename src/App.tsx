@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TripPlanner from "./components/TripPlanner";
+import "./index.css";
 
 export default function App() {
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    document.body.className = theme === "dark" ? "dark-theme" : "light-theme";
+  }, [theme]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <header className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
-              🚛 Truck Route Planner
-            </h1>
-            <div className="text-sm text-gray-500">
-              ELD Compliant Planning System
-            </div>
-          </div>
-        </div>
+    <div style={{ minHeight: "100vh" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", padding: "1rem" }}>
+        <h1>🚛 Truck Route Planner</h1>
+        <button
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          style={{
+            padding: "0.25rem 0.5rem", // 🔽 smaller padding
+            fontSize: "0.8rem",
+            marginTop: "2.7rem",
+            height: "2rem", // 🔽 smaller height
+            border: "1px solid gray",
+            borderRadius: "8px",
+            cursor: "pointer",
+            background: theme === "dark" ? "#333" : "#f0f0f0",
+            color: theme === "dark" ? "#fff" : "#000",
+          }}
+        >
+          {theme === "dark" ? "☀ Light Mode" : "🌙 Dark Mode"}
+        </button>
       </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <TripPlanner />
-      </main>
+
+      <TripPlanner />
     </div>
   );
 }

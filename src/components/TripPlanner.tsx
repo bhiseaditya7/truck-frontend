@@ -11,7 +11,10 @@ import {
   useMediaQuery,
   Container,
   Typography,
+  TextField,
 } from "@mui/material";
+import { Mail, Lock, Eye, EyeOff, Scan, User } from "lucide-react";
+// import { FormControl } from '@mui/base/FormControl';
 
 export default function TripPlanner() {
   const [form, setForm] = useState<RouteRequest>({
@@ -57,10 +60,11 @@ export default function TripPlanner() {
   return (
     <Box
       sx={{
+        alignContent:"start",
         width: { xs: "100%", md: "100%" },
         minHeight: { xs: "100vh", md: "auto" },
-        position: "relative",
-        // bgcolor: theme.palette.background.default,
+        position: "left",
+     
         "&::before": {
           content: '""',
           position: "absolute",
@@ -69,7 +73,7 @@ export default function TripPlanner() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, rgba(147,51,234,0) 0%, rgba(147,51,234,0.2) 50%, rgba(147,51,234,0) 100%)",
+            "linear-gradient(90deg, rgba(248, 244, 252, 0.94) 0%, rgba(147,51,234,0.2) 50%, rgba(147,51,234,0) 100%)",
         },
       }}
     >
@@ -105,89 +109,67 @@ export default function TripPlanner() {
             Enter your trip information below
           </Typography>
 
-          <form onSubmit={submit} className="p-6">
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Location
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    value={form.current_location}
-                    onChange={(e) =>
-                      setForm({ ...form, current_location: e.target.value })
-                    }
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="Enter city or address"
-                    required
-                  />
-                </div>
-              </div>
+          <Box
+            component="form"
+            onSubmit={submit}
+            sx={{
+              
+              mt: { xs: 3, sm: 4 },
+              "& .MuiTextField-root": { mb: { xs: 2, sm: 3 } },
+            }}
+          >
+            <div >
+              <TextField
+                fullWidth
+                label="Current Location"
+                value={form.current_location}
+                error={!!error}
+                helperText={error ? "Please check your input" : ""}
+                variant="outlined"
+                onChange={(e) =>
+                  setForm({ ...form, current_location: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pickup Location
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    value={form.pickup_location}
-                    onChange={(e) =>
-                      setForm({ ...form, pickup_location: e.target.value })
-                    }
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="Enter pickup location"
-                    required
-                  />
-                </div>
-              </div>
+              <TextField
+                fullWidth
+                label="Pickup Location"
+                value={form.pickup_location}
+                error={!!error}
+                helperText={error ? "Please check your input" : ""}
+                variant="outlined"
+                onChange={(e) =>
+                  setForm({ ...form, pickup_location: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Dropoff Location
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    value={form.dropoff_location}
-                    onChange={(e) =>
-                      setForm({ ...form, dropoff_location: e.target.value })
-                    }
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="Enter dropoff location"
-                    required
-                  />
-                </div>
-              </div>
+              <TextField
+                fullWidth
+                label="Dropoff Location"
+                value={form.dropoff_location}
+                error={!!error}
+                helperText={error ? "Please check your input" : ""}
+                variant="outlined"
+                onChange={(e) =>
+                  setForm({ ...form, dropoff_location: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Cycle Used
-                  <span className="ml-1 text-sm text-gray-500">(in hours)</span>
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="70"
-                    value={form.current_cycle_used}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        current_cycle_used: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="Enter hours used (0-70)"
-                  />
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Enter the number of hours already used in your current cycle
-                  (0-70)
-                </p>
-              </div>
+              <TextField
+                fullWidth
+                type="number"
+                label="current cycle used (in hours)"
+                value={form.current_cycle_used}
+                error={!!error}
+                helperText={error ? "Please check your input" : ""}
+                variant="outlined"
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    current_cycle_used: parseFloat(e.target.value),
+                  })
+                }
+              />
             </div>
 
             {error && (
@@ -247,7 +229,7 @@ export default function TripPlanner() {
                 )}
               </button>
             </div>
-          </form>
+          </Box>
 
           {resp && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
