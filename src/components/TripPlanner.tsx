@@ -3,18 +3,13 @@ import axios from "axios";
 import MapDisplay from "./MapDisplay";
 import ELDLog from "./ELDLog";
 import type { RouteRequest, RouteResponse } from "../types";
-// import ROUTE_URL from "../utils/constants"
 import { generateLogs } from "../utils/generateLogs";
 import {
   Box,
-  useTheme,
-  useMediaQuery,
   Container,
   Typography,
   TextField,
 } from "@mui/material";
-import { Mail, Lock, Eye, EyeOff, Scan, User } from "lucide-react";
-// import { FormControl } from '@mui/base/FormControl';
 
 export default function TripPlanner() {
   const [form, setForm] = useState<RouteRequest>({
@@ -35,7 +30,7 @@ export default function TripPlanner() {
 
     try {
       const r = await axios.post<RouteResponse>(
-        "http://127.0.0.1:8000" + "/api/route/",
+        "http://127.0.0.1:8000/api/route/",
         form
       );
       console.log("API Response:", r.data);
@@ -56,56 +51,44 @@ export default function TripPlanner() {
       setLoading(false);
     }
   };
+    const logs = [
+    { status: "OFF", start_h: 0, duration_h: 6 },
+    { status: "D", start_h: 6, duration_h: 5 },
+    { status: "ON", start_h: 11, duration_h: 1 },
+    { status: "SB", start_h: 12, duration_h: 8 },
+    { status: "D", start_h: 20, duration_h: 3 },
+  ];
+
 
   return (
     <Box
       sx={{
-        alignContent:"start",
-        width: { xs: "100%", md: "100%" },
-        minHeight: { xs: "100vh", md: "auto" },
-        position: "left",
-     
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "1px",
-          background:
-            "linear-gradient(90deg, rgba(248, 244, 252, 0.94) 0%, rgba(147,51,234,0.2) 50%, rgba(147,51,234,0) 100%)",
-        },
+        width: "100%",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Container
-        maxWidth="sm"
+        maxWidth={false}
         sx={{
           py: { xs: 4, sm: 6, md: 8 },
           px: { xs: 2, sm: 4 },
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: "flex-start",
+          gap: 6,
         }}
       >
-        <Box
-          sx={{ width: "100%", maxWidth: { xs: "100%", sm: 420 }, mx: "auto" }}
-        >
+        {/* Left Column: Form */}
+        <Box sx={{ width: "100%", maxWidth: { xs: "100%", md: 420 } }}>
           <Typography
             variant="h4"
-            sx={{
-              // color: theme.palette.text.primary,
-              fontWeight: "bold",
-              mb: 1,
-              textAlign: { xs: "center", sm: "left" },
-            }}
+            sx={{ fontWeight: "bold", mb: 1, textAlign: { xs: "center", md: "left" } }}
           >
             Route Details
           </Typography>
-          <Typography
-            // color="text.secondary"
-            sx={{ mb: 4, textAlign: { xs: "center", sm: "left" } }}
-          >
+          <Typography sx={{ mb: 4, textAlign: { xs: "center", md: "left" } }}>
             Enter your trip information below
           </Typography>
 
@@ -113,67 +96,63 @@ export default function TripPlanner() {
             component="form"
             onSubmit={submit}
             sx={{
-              
-              mt: { xs: 3, sm: 4 },
               "& .MuiTextField-root": { mb: { xs: 2, sm: 3 } },
             }}
           >
-            <div >
-              <TextField
-                fullWidth
-                label="Current Location"
-                value={form.current_location}
-                error={!!error}
-                helperText={error ? "Please check your input" : ""}
-                variant="outlined"
-                onChange={(e) =>
-                  setForm({ ...form, current_location: e.target.value })
-                }
-              />
+            <TextField
+              fullWidth
+              label="Current Location"
+              value={form.current_location}
+              error={!!error}
+              helperText={error ? "Please check your input" : ""}
+              variant="outlined"
+              onChange={(e) =>
+                setForm({ ...form, current_location: e.target.value })
+              }
+            />
 
-              <TextField
-                fullWidth
-                label="Pickup Location"
-                value={form.pickup_location}
-                error={!!error}
-                helperText={error ? "Please check your input" : ""}
-                variant="outlined"
-                onChange={(e) =>
-                  setForm({ ...form, pickup_location: e.target.value })
-                }
-              />
+            <TextField
+              fullWidth
+              label="Pickup Location"
+              value={form.pickup_location}
+              error={!!error}
+              helperText={error ? "Please check your input" : ""}
+              variant="outlined"
+              onChange={(e) =>
+                setForm({ ...form, pickup_location: e.target.value })
+              }
+            />
 
-              <TextField
-                fullWidth
-                label="Dropoff Location"
-                value={form.dropoff_location}
-                error={!!error}
-                helperText={error ? "Please check your input" : ""}
-                variant="outlined"
-                onChange={(e) =>
-                  setForm({ ...form, dropoff_location: e.target.value })
-                }
-              />
+            <TextField
+              fullWidth
+              label="Dropoff Location"
+              value={form.dropoff_location}
+              error={!!error}
+              helperText={error ? "Please check your input" : ""}
+              variant="outlined"
+              onChange={(e) =>
+                setForm({ ...form, dropoff_location: e.target.value })
+              }
+            />
 
-              <TextField
-                fullWidth
-                type="number"
-                label="current cycle used (in hours)"
-                value={form.current_cycle_used}
-                error={!!error}
-                helperText={error ? "Please check your input" : ""}
-                variant="outlined"
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    current_cycle_used: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
+            <TextField
+              fullWidth
+              type="number"
+              label="Current cycle used (in hours)"
+              value={form.current_cycle_used}
+              error={!!error}
+              helperText={error ? "Please check your input" : ""}
+              variant="outlined"
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  current_cycle_used: parseFloat(e.target.value),
+                })
+              }
+            />
 
             {error && (
-              <div className="mt-4 rounded-md bg-red-50 p-4">
+              <Box className="mt-4 rounded-md bg-red-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">⚠️</div>
                   <div className="ml-3">
@@ -187,7 +166,7 @@ export default function TripPlanner() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Box>
             )}
 
             <div className="mt-6">
@@ -203,18 +182,20 @@ export default function TripPlanner() {
                 {loading ? (
                   <span className="flex items-center">
                     <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                       className="animate-spin -ml-0.5 mr-1 h-3 w-3 text-white"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
+                      
                     >
                       <circle
-                        className="opacity-25"
+                        className="opacity-22"
                         cx="12"
                         cy="12"
                         r="10"
                         stroke="currentColor"
-                        strokeWidth="4"
+                        strokeWidth="2"
+                        
                       ></circle>
                       <path
                         className="opacity-75"
@@ -230,90 +211,79 @@ export default function TripPlanner() {
               </button>
             </div>
           </Box>
+        </Box>
 
-          {resp && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-              {/* Trip Details Section */}
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Trip Details
-                  </h3>
+        {/* Right Column: Trip Details & Map */}
+        {resp && (
+          <Box sx={{ flex: 1, minHeight: "400px" }}>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Trip Details
+                </h3>
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="text-sm text-blue-600 font-medium">
+                      Total Distance : {resp.distance_miles.toFixed(1)} miles 
+                    </div>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="text-sm text-green-600 font-medium">
+                      Total Duration :  {resp.duration_h_with_pd.toFixed(1)} hrs
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <div className="text-sm text-blue-600 font-medium">
-                        Total Distance
-                      </div>
-                      <div className="mt-1 text-2xl font-semibold text-blue-900">
-                        {resp.distance_miles.toFixed(1)} miles
-                      </div>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <div className="text-sm text-green-600 font-medium">
-                        Total Duration
-                      </div>
-                      <div className="mt-1 text-2xl font-semibold text-green-900">
-                        {resp.duration_h_with_pd.toFixed(1)} hrs
-                      </div>
-                    </div>
-                  </div>
-                  <div className="border-t border-gray-200 pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">
-                      Fuel Stops
-                    </h4>
-                    {resp.fuel_stops_miles.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {resp.fuel_stops_miles.map((mile, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
-                          >
-                            At {mile} miles
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500">
-                        No fuel stops needed
-                      </p>
-                    )}
-                  </div>
 
-                  <div className="border-t border-gray-200 pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">
-                      Hours of Service
-                    </h4>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-sm text-gray-600">
-                        Remaining Cycle Hours:{" "}
-                        <span className="font-medium text-gray-900">
-                          {resp.eld.remaining_cycle_hours.toFixed(1)}
+                <div className="border-t border-gray-200 pt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Fuel Stops
+                  </h4>
+                  {resp.fuel_stops_miles.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {resp.fuel_stops_miles.map((mile, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                        >
+                          At {mile} miles
                         </span>
-                      </div>
+                      ))}
                     </div>
-                    <div className="mt-4">
-                      <ELDLog logs={resp.eld.logs} />
+                  ) : (
+                    <p className="text-sm text-gray-500">No fuel stops needed</p>
+                  )}
+                </div>
+
+                <div className="border-t border-gray-200 pt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Hours of Service
+                  </h4>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-sm text-gray-600">
+                      Remaining Cycle Hours:{" "}
+                      <span className="font-medium text-gray-900">
+                        {resp.eld.remaining_cycle_hours.toFixed(1)}
+                      </span>
                     </div>
                   </div>
-
-                  {/* Map Section */}
-                  <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Route Map
-                      </h3>
-                    </div>
-                    <div className="h-[400px] relative">
-                      <MapDisplay geometry={resp.geometry} />
-                    </div>
+                  <div className="mt-4">
+                    {/* <ELDLog logs={resp.eld.logs} /> */}
+                    <ELDLog logs={logs} />
                   </div>
                 </div>
+
+                <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, boxShadow: 1 }}>
+                 <Typography variant="h6" sx={{ mb: 2 }}>Route Map</Typography>
+                 <Box sx={{ height: 400, borderRadius: 2, overflow: "hidden" }}>
+                   <MapDisplay geometry={resp.geometry} />
+                 </Box>
+               </Box>
               </div>
             </div>
-          )}
-        </Box>
+          </Box>
+        )}
       </Container>
     </Box>
   );

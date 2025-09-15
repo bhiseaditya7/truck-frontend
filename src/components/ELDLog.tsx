@@ -6,11 +6,19 @@ interface Props {
 }
 
 const COLORS = {
-  driving: "#2563eb", // blue-600
-  rest: "#f59e0b",    // amber-500
-  reset: "#dc2626",   // red-600
-  grid: "#e5e7eb",    // gray-200
-  text: "#1f2937",    // gray-800
+
+  grid: "#e5e7eb",    // Grid lines - Light Gray
+  text: "#1f2937",    // Labels - Dark Gray
+  line: "#111827",    // Duty status line - Almost black
+};
+
+// Map duty status to Y positions (top-down)
+const DUTY_STATUSES = ["OFF", "SB", "D", "ON"];
+const STATUS_Y = {
+  OFF: 50,
+  SB: 100,
+  D: 150,
+  ON: 200,
 };
 
 export default function ELDLog({ logs }: Props) {
@@ -21,96 +29,86 @@ export default function ELDLog({ logs }: Props) {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
-    
+
     // Make canvas responsive
     canvas.width = container.clientWidth;
-    canvas.height = Math.max(200, 50 + logs.length * 30);
-    
+    canvas.height = 260;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const width = canvas.width;
-    const height = canvas.height;
-    const hourWidth = (width - 100) / 24; // Leave space for labels
-    const startX = 80; // Starting X position after labels
-    let y = 50; // Start lower to accommodate header
 
-    // Draw time grid and labels
-    ctx.font = '12px system-ui';
+    const width = canvas.width;
+    const startX = 80; // leave room for labels
+    const hourWidth = (width - startX - 20) / 24;
+
+    // === Draw horizontal grid lines and labels ===
+    ctx.strokeStyle = COLORS.grid;
+    ctx.lineWidth = 1;
+    ctx.font = "12px system-ui";
     ctx.fillStyle = COLORS.text;
-    ctx.textAlign = 'center';
-    
-    // Draw hour markers
+    ctx.textAlign = "right";
+
+    DUTY_STATUSES.forEach((status) => {
+      const y = STATUS_Y[status as keyof typeof STATUS_Y];
+      // Draw horizontal grid line
+      ctx.beginPath();
+      ctx.moveTo(startX, y);
+      ctx.lineTo(width - 10, y);
+      ctx.stroke();
+
+      // Draw status label
+      ctx.fillText(status, startX - 10, y + 4);
+    });
+
+    // === Draw vertical hour markers ===
+    ctx.textAlign = "center";
+    ctx.fillStyle = COLORS.text;
     for (let hour = 0; hour <= 24; hour++) {
       const x = startX + hour * hourWidth;
-      // Grid lines
-      ctx.strokeStyle = COLORS.grid;
       ctx.beginPath();
-      ctx.moveTo(x, 30);
-      ctx.lineTo(x, height);
+      ctx.moveTo(x, STATUS_Y.OFF - 30);
+      ctx.lineTo(x, STATUS_Y.ON + 30);
+      ctx.strokeStyle = COLORS.grid;
       ctx.stroke();
-      
-      // Hour labels
-      if (hour % 3 === 0) { // Show every 3 hours for clarity
-        ctx.fillText(hour.toString().padStart(2, '0') + ':00', x, 25);
+
+      if (hour % 3 === 0) {
+        ctx.fillText(hour.toString().padStart(2, "0") + ":00", x, STATUS_Y.OFF - 35);
       }
     }
 
-    // Draw the legend
-    const legendY = 10;
-    const legendItems = [
-      { color: COLORS.driving, label: 'Driving' },
-      { color: COLORS.rest, label: 'Rest' },
-      { color: COLORS.reset, label: '34h Reset' }
-    ];
-    
-    let legendX = startX;
-    legendItems.forEach(item => {
-      ctx.fillStyle = item.color;
-      ctx.fillRect(legendX, legendY - 8, 20, 8);
-      ctx.fillStyle = COLORS.text;
-      ctx.textAlign = 'left';
-      ctx.fillText(item.label, legendX + 25, legendY);
-      legendX += 120;
+
+    // === Draw connected duty status line ===
+    ctx.strokeStyle = COLORS.line;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    logs.forEach((log, i) => {
+      const x = startX + log.start_h * hourWidth;
+      const y = STATUS_Y[log.status as keyof typeof STATUS_Y] ?? STATUS_Y.OFF;
+
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+
+      // Draw horizontal line for duration
+      if (log.duration_h) {
+        ctx.lineTo(x + log.duration_h * hourWidth, y);
+      }
     });
 
-    // Draw the logs
-    logs.forEach((log) => {
-      ctx.textAlign = 'right';
-      if (log.type === "drive" && log.driving_h) {
-        ctx.fillStyle = COLORS.driving;
-        ctx.fillRect(startX, y, log.driving_h * hourWidth, 20);
-        ctx.fillStyle = COLORS.text;
-        ctx.fillText(`Day ${log.day}: ${log.driving_h}h driving`, startX - 5, y + 14);
-        y += 30;
-      }
-      if (log.type === "rest" && log.duration_h) {
-        ctx.fillStyle = COLORS.rest;
-        ctx.fillRect(startX, y, log.duration_h * hourWidth, 20);
-        ctx.fillStyle = COLORS.text;
-        ctx.fillText(`Day ${log.day}: ${log.duration_h}h rest`, startX - 5, y + 14);
-        y += 30;
-      }
-      if (log.type === "reset" && log.duration_h) {
-        ctx.fillStyle = COLORS.reset;
-        ctx.fillRect(startX, y, log.duration_h * hourWidth, 20);
-        ctx.fillStyle = COLORS.text;
-        ctx.fillText(`Day ${log.day}: 34h reset`, startX - 5, y + 14);
-        y += 30;
-      }
-    });
+    ctx.stroke();
+
   }, [logs]);
 
   return (
     <div ref={containerRef} className="w-full">
       <h3 className="text-lg font-semibold mb-2">Hours of Service Logs</h3>
       <div className="border rounded bg-white p-4">
-        <canvas 
-          ref={canvasRef} 
-          className="w-full" 
-          style={{ maxHeight: '400px' }}
-        />
+        <canvas ref={canvasRef} className="w-full" style={{ maxHeight: "300px" }} />
       </div>
     </div>
   );
