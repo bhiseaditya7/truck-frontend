@@ -30,7 +30,7 @@ export default function TripPlanner() {
 
     try {
       const r = await axios.post<RouteResponse>(
-        "http://127.0.0.1:8000/api/route/",
+        "https://bhiseaditya7.pythonanywhere.com/api/route/",
         form
       );
       console.log("API Response:", r.data);
