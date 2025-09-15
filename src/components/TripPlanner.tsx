@@ -10,6 +10,7 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import type { ELDLogEntry } from "../types";
 
 export default function TripPlanner() {
   const [form, setForm] = useState<RouteRequest>({
@@ -52,13 +53,13 @@ export default function TripPlanner() {
       setLoading(false);
     }
   };
-    const logs_eld_fix = [
-    { status: "OFF", start_h: 0, duration_h: 6 },
-    { status: "D", start_h: 6, duration_h: 5 },
-    { status: "ON", start_h: 11, duration_h: 1 },
-    { status: "SB", start_h: 12, duration_h: 8 },
-    { status: "D", start_h: 20, duration_h: 3 },
-  ];
+const logs_eld_fix: ELDLogEntry[] = [
+  { day: 1, type: "rest", duration_h: 6, notes: "Sleeper berth" },
+  { day: 1, type: "drive", driving_h: 5, duration_h: 5 },
+  { day: 1, type: "rest", duration_h: 1, notes: "On duty not driving" },
+  { day: 1, type: "rest", duration_h: 8, notes: "Sleeper berth" },
+  { day: 1, type: "drive", driving_h: 3, duration_h: 3 },
+];
 
 
   return (
@@ -282,7 +283,7 @@ export default function TripPlanner() {
                    <MapDisplay
                       geometry={resp.geometry}
                       fuelStopsMiles={resp.fuel_stops_miles}
-                      restStops={resp.restStops}
+                      // restStops={resp.restStops}
                       totalMiles={resp.distance_miles}
                     />
                  </Box>
