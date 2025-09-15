@@ -52,7 +52,7 @@ export default function TripPlanner() {
       setLoading(false);
     }
   };
-    const logs = [
+    const logs_eld_fix = [
     { status: "OFF", start_h: 0, duration_h: 6 },
     { status: "D", start_h: 6, duration_h: 5 },
     { status: "ON", start_h: 11, duration_h: 1 },
@@ -271,7 +271,7 @@ export default function TripPlanner() {
                   </div>
                   <div className="mt-4">
                     {/* <ELDLog logs={resp.eld.logs} /> */}
-                    <ELDLog logs={logs} />
+                    <ELDLog logs = {logs_eld_fix} />
                   </div>
                 </div>
 
@@ -282,7 +282,7 @@ export default function TripPlanner() {
                    <MapDisplay
                       geometry={resp.geometry}
                       fuelStopsMiles={resp.fuel_stops_miles}
-                      restStops={resp.rest_stops}
+                      restStops={resp.restStops}
                       totalMiles={resp.distance_miles}
                     />
                  </Box>

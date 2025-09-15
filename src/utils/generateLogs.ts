@@ -16,7 +16,7 @@ export function generateLogs({
   pickupHrs = 1,
   dropoffHrs = 1,
   maxDrivePerDay = 11,
-  maxWorkDay = 14,
+  // maxWorkDay = 14,
   restBreak = 10,
 }: GenerateLogParams): DutyLog[] {
   let remainingDrive = totalDriveHrs;
@@ -26,7 +26,7 @@ export function generateLogs({
 
   while (remainingDrive > 0) {
     let driveToday = Math.min(remainingDrive, maxDrivePerDay);
-    let workStart = cursor;
+
     let workEnd = cursor;
 
     // 1️⃣ Pickup on Day 1 only

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TripPlanner from "./components/TripPlanner";
 import "./index.css";
 
 export default function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme] = useState("light");
 
   useEffect(() => {
     document.body.className = theme === "dark" ? "dark-theme" : "light-theme";

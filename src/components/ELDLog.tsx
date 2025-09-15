@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ELDLogEntry } from "../types";
 
 interface Props {
@@ -85,8 +85,8 @@ export default function ELDLog({ logs }: Props) {
     ctx.beginPath();
 
     logs.forEach((log, i) => {
-      const x = startX + log.start_h * hourWidth;
-      const y = STATUS_Y[log.status as keyof typeof STATUS_Y] ?? STATUS_Y.OFF;
+      const x = startX + 1 * hourWidth;
+      const y =  STATUS_Y.OFF;
 
       if (i === 0) {
         ctx.moveTo(x, y);
