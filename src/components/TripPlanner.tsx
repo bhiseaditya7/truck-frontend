@@ -277,7 +277,13 @@ export default function TripPlanner() {
                 <Box sx={{ p: 2, bgcolor: "white", borderRadius: 2, boxShadow: 1 }}>
                  <Typography variant="h6" sx={{ mb: 2 }}>Route Map</Typography>
                  <Box sx={{ height: 400, borderRadius: 2, overflow: "hidden" }}>
-                   <MapDisplay geometry={resp.geometry} />
+                   {/* <MapDisplay geometry={resp.geometry} /> */}
+                   <MapDisplay
+                      geometry={resp.geometry}
+                      fuelStopsMiles={resp.fuel_stops_miles}
+                      restStops={resp.rest_stops}
+                      totalMiles={resp.distance_miles}
+                    />
                  </Box>
                </Box>
               </div>
