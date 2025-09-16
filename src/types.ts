@@ -36,3 +36,9 @@ export interface DutyLog {
   start: number;          // Start time in hours from trip start (e.g., 6 = 06:00)
   end: number;            // End time in hours from trip start
 }
+
+export interface CanvasLogEntry {
+  status: "OFF" | "SB" | "D" | "ON";
+  start_h: number;
+  duration_h: number;
+}
