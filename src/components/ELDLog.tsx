@@ -1,18 +1,11 @@
 import { useEffect, useRef } from "react";
-// import type { ELDLogEntry } from "../types";
-
-// interface Props {
-//   logs: ELDLogEntry[];
-// }
-
 import type { CanvasLogEntry } from "../types";
 
 interface Props {
-  logs1: CanvasLogEntry[];
+  logs1: CanvasLogEntry[]; // ✅ match what TripPlanner sends
 }
 
 const COLORS = {
-
   grid: "#e5e7eb",    // Grid lines - Light Gray
   text: "#1f2937",    // Labels - Dark Gray
   line: "#111827",    // Duty status line - Almost black
@@ -27,7 +20,7 @@ const STATUS_Y = {
   ON: 200,
 };
 
-export default function ELDLog({ logs }: Props) {
+export default function ELDLog({ logs1 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -58,13 +51,11 @@ export default function ELDLog({ logs }: Props) {
 
     DUTY_STATUSES.forEach((status) => {
       const y = STATUS_Y[status as keyof typeof STATUS_Y];
-      // Draw horizontal grid line
       ctx.beginPath();
       ctx.moveTo(startX, y);
       ctx.lineTo(width - 10, y);
       ctx.stroke();
 
-      // Draw status label
       ctx.fillText(status, startX - 10, y + 4);
     });
 
@@ -84,15 +75,14 @@ export default function ELDLog({ logs }: Props) {
       }
     }
 
-
     // === Draw connected duty status line ===
     ctx.strokeStyle = COLORS.line;
     ctx.lineWidth = 2;
     ctx.beginPath();
 
-    logs.forEach((log, i) => {
-      const x = startX + 1 * hourWidth;
-      const y =  STATUS_Y.OFF;
+    logs1.forEach((log: CanvasLogEntry, i: number) => {
+      const x = startX + log.start_h * hourWidth;
+      const y = STATUS_Y[log.status];
 
       if (i === 0) {
         ctx.moveTo(x, y);
@@ -107,8 +97,7 @@ export default function ELDLog({ logs }: Props) {
     });
 
     ctx.stroke();
-
-  }, [logs]);
+  }, [logs1]);
 
   return (
     <div ref={containerRef} className="w-full">
