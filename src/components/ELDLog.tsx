@@ -1,8 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import type { ELDLogEntry } from "../types";
 
+// interface Props {
+//   logs: ELDLogEntry[];
+// }
+
+import type { CanvasLogEntry } from "../types";
+
 interface Props {
-  logs: ELDLogEntry[];
+  logs1: CanvasLogEntry[];
 }
 
 const COLORS = {
